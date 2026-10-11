@@ -1,0 +1,23 @@
+{
+  "name": "catch-scrapers",
+  "version": "1.0.0",
+  "description": "CATCH Scrapers: Puppeteer + BS4 (via Python subprocess) scheduled jobs",
+  "scripts": {
+    "seed": "node src/jobs/seedLoader.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/scheduler.ts",
+    "test": "jest"
+  },
+  "dependencies": {
+    "mongoose": "^8.4.0",
+    "node-cron": "^3.0.3",
+    "puppeteer": "^22.11.2",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "typescript": "^5.4.5",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.7.0"
+  }
+}

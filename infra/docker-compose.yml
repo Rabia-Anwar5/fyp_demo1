@@ -1,0 +1,96 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: catch_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: catch
+
+  mongo-express:
+    image: mongo-express:1.0.2-20
+    container_name: catch_mongo_express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: catchdev
+    depends_on:
+      - mongodb
+
+  ai-service:
+    build:
+      context: ../ai-service
+      dockerfile: Dockerfile
+    container_name: catch_ai_service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - CONFIDENCE_THRESHOLD=0.70
+      - LOGIC_SERVICE_URL=http://logic-service:3001
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY:-dev-insecure-key}
+      - DEVICE=cpu
+      - LATENCY_LOG_FILE=/app/logs/latency.jsonl
+    volumes:
+      - ai_logs:/app/logs
+      - ai_weights:/app/ml/weights
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  logic-service:
+    build:
+      context: ../logic-service
+      dockerfile: Dockerfile
+    container_name: catch_logic_service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/catch
+      - AI_SERVICE_URL=http://ai-service:8000
+      - FIREBASE_SERVICE_ACCOUNT_PATH=${FIREBASE_SERVICE_ACCOUNT_PATH:-}
+      - AI_SERVICE_API_KEY=${AI_SERVICE_API_KEY:-dev-insecure-key}
+      - LOG_LEVEL=info
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  seed:
+    image: node:20-alpine
+    container_name: catch_seed
+    working_dir: /app
+    volumes:
+      - ../scrapers:/app
+    command: >
+      sh -c "npm install --omit=dev && node src/jobs/seedLoader.js"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/catch
+    depends_on:
+      - mongodb
+    restart: "no"
+
+volumes:
+  mongo_data:
+  ai_logs:
+  ai_weights:

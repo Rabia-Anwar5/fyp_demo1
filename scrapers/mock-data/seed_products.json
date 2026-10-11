@@ -1,0 +1,46 @@
+[
+  {
+    "sku": "DR-JKT-001",
+    "source": "merchant",
+    "store_id": "store_01",
+    "store_name": "Denim Republic",
+    "mall_id": "mall_001",
+    "name": "Classic Denim Jacket",
+    "category": "apparel",
+    "subcategory": "jacket",
+    "fabric_type": "denim",
+    "original_price": 199.00,
+    "stock_qty": 24,
+    "stock_status": "in_stock",
+    "image_url": null
+  },
+  {
+    "sku": "FH-SHIRT-042",
+    "source": "scraper",
+    "store_id": "store_02",
+    "store_name": "FashionHub",
+    "mall_id": "mall_001",
+    "name": "Premium Cotton Shirt",
+    "category": "apparel",
+    "subcategory": "shirt",
+    "fabric_type": "cotton",
+    "original_price": 89.90,
+    "stock_qty": 8,
+    "stock_status": "low_stock",
+    "image_url": null
+  },
+  {
+    "sku": "SK-SNK-007",
+    "source": "merchant",
+    "store_id": "store_03",
+    "store_name": "SoleKing",
+    "mall_id": "mall_001",
+    "name": "AirFlex Runner Sneaker",
+    "category": "footwear",
+    "subcategory": "sneaker",
+    "original_price": 120.00,
+    "stock_qty": 12,
+    "stock_status": "in_stock",
+    "image_url": null
+  }
+]

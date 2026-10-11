@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "CATCH",
+    "slug": "catch-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0f0f17"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0f0f17"
+      },
+      "permissions": ["android.permission.CAMERA"]
+    },
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "CATCH uses the camera to recognise products and find the best deals."
+      }
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-router",
+      ["expo-notifications", { "icon": "./assets/icon.png" }]
+    ],
+    "scheme": "catch"
+  }
+}

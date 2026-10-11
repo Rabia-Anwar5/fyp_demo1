@@ -1,0 +1,47 @@
+# Secrets
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+dist/
+*.log
+
+# ML weights (use download script instead)
+ai-service/ml/weights/*.pt
+ai-service/ml/weights/*.pkl
+ml/runs/
+ml/dataset/.fmnist_cache/
+
+# Expo
+mobile/.expo/
+mobile/android/
+mobile/ios/
+mobile/dist/
+
+# Docker volumes
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.jsonl

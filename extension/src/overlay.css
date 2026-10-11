@@ -1,0 +1,356 @@
+/* CATCH Extension Overlay & AR Try-On Styles */
+#catch-overlay-root {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+  color: #f1f5f9;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+
+#catch-overlay-root * {
+  box-sizing: border-box;
+}
+
+/* Floating Pill */
+.catch-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 15, 23, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 92, 246, 0.5);
+  padding: 8px 14px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px -5px rgba(108, 63, 255, 0.4), 0 0 15px rgba(139, 92, 246, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.catch-pill:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 35px -5px rgba(108, 63, 255, 0.6), 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.catch-logo-badge {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.catch-pill-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.catch-saving-highlight {
+  font-size: 13px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.catch-deal-count {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.catch-tryon-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.catch-tryon-btn:hover {
+  opacity: 0.9;
+}
+
+/* Slide-out Drawer */
+.catch-drawer {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  width: 320px;
+  background: #0f172a;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: catch-drawer-in 0.25s ease-out;
+}
+
+@keyframes catch-drawer-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.catch-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #1e1b4b, #2e1065);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.catch-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.catch-subtitle {
+  font-size: 11px;
+  color: #cbd5e1;
+  margin-top: 2px;
+}
+
+.catch-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.catch-deal-list {
+  padding: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.catch-deal-item {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.catch-deal-best {
+  border-color: #8b5cf6;
+  background: #1e1e38;
+}
+
+.catch-deal-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.catch-deal-store {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.catch-deal-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.catch-deal-prices {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-top: 6px;
+}
+
+.catch-price-now {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.catch-saving-tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.catch-deal-code-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f172a;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-top: 8px;
+}
+
+.catch-deal-code-box code {
+  font-size: 11px;
+  color: #c084fc;
+  font-family: monospace;
+  font-weight: 700;
+}
+
+.catch-copy-btn {
+  background: #334155;
+  border: none;
+  color: #f1f5f9;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.catch-deal-reason {
+  font-size: 10px;
+  color: #a78bfa;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+.catch-tryon-section {
+  padding: 12px;
+  border-top: 1px solid #334155;
+  background: #0f172a;
+}
+
+.catch-action-tryon {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: none;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal AR Try-on */
+.catch-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483648;
+}
+
+.catch-modal-content {
+  width: 420px;
+  background: #0f172a;
+  border: 1px solid #6366f1;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+.catch-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: #1e1b4b;
+  border-bottom: 1px solid #334155;
+}
+
+.catch-modal-header h3 {
+  font-size: 14px;
+  margin: 0;
+  color: #f8fafc;
+}
+
+.catch-modal-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.catch-modal-body {
+  padding: 16px;
+  text-align: center;
+}
+
+.catch-tryon-viewport {
+  width: 100%;
+  height: 280px;
+  background: #020617;
+  border-radius: 12px;
+  border: 1px dashed #6366f1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.catch-garment-overlay {
+  max-width: 70%;
+  max-height: 70%;
+  object-fit: contain;
+  position: absolute;
+  z-index: 2;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+}
+
+.catch-avatar-silhouette {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+
+.catch-ar-tracker {
+  position: relative;
+  width: 160px;
+  height: 220px;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+.catch-ar-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #34d399;
+}
+
+.catch-ar-point.p1 { top: 0; left: 0; }
+.catch-ar-point.p2 { top: 0; right: 0; }
+.catch-ar-point.p3 { bottom: 0; left: 0; }
+.catch-ar-point.p4 { bottom: 0; right: 0; }
+
+.catch-ar-text {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  font-size: 10px;
+  color: #34d399;
+}
+
+.catch-tryon-caption {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 12px;
+}

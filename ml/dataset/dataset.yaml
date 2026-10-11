@@ -1,0 +1,20 @@
+# CATCH Dataset Configuration (YOLOv8 format)
+# Place this file at ml/dataset/dataset.yaml
+
+path: ./ml/dataset        # root relative to repo root
+train: images/train
+val: images/val
+test: images/test
+
+nc: 10   # number of classes
+names:
+  0: jacket
+  1: shirt
+  2: pants
+  3: dress
+  4: sneaker
+  5: formal_shoe
+  6: bag
+  7: watch
+  8: sunglasses
+  9: electronics

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CATCH – Coupon Hub</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 340px; min-height: 200px; font-family: 'Inter', -apple-system, sans-serif; background: #0f0f17; color: #e8e8f0; }
+    .header { background: linear-gradient(135deg, #6c3fff 0%, #c84fff 100%); padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+    .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .tag { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 10px; }
+    .body { padding: 16px 20px; }
+    .status { font-size: 12px; color: #a0a0c0; margin-bottom: 12px; }
+    .deals-list { display: flex; flex-direction: column; gap: 8px; }
+    .deal-card { background: #1a1a2e; border: 1px solid #2a2a45; border-radius: 10px; padding: 12px; }
+    .deal-card .saving { font-size: 16px; font-weight: 700; color: #7cf7b0; }
+    .deal-card .code { font-size: 12px; color: #c0c0e0; margin-top: 4px; }
+    .deal-card .store { font-size: 11px; color: #808090; margin-top: 2px; }
+    .empty { text-align: center; color: #606080; padding: 32px 0; font-size: 13px; }
+    .scan-btn { width: 100%; margin-top: 12px; padding: 10px; border-radius: 8px; border: none; background: linear-gradient(135deg, #6c3fff, #c84fff); color: white; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .scan-btn:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M8 12l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+    <h1>CATCH</h1>
+    <span class="tag">Coupon Hub</span>
+  </div>
+  <div class="body">
+    <p class="status" id="status">Scanning page for products...</p>
+    <div class="deals-list" id="deals-list">
+      <div class="empty">No products detected on this page yet.</div>
+    </div>
+    <button class="scan-btn" id="scan-btn">Scan This Page</button>
+  </div>
+  <script src="../src/popup.js"></script>
+</body>
+</html>

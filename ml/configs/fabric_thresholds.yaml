@@ -1,0 +1,24 @@
+# Fabric quality tier thresholds derived from GLCM/LBP features.
+# Tune after training; these are provisional values for MVP.
+quality_tier:
+  premium:
+    glcm_energy_min: 0.40
+    glcm_contrast_max: 30.0
+  standard:
+    glcm_energy_max: 0.40
+    glcm_contrast_min: 30.0
+
+fabric_type_heuristics:
+  denim:
+    glcm_contrast_min: 80
+    lbp_std_min: 7.0
+  polyester:
+    glcm_energy_min: 0.50
+    lbp_std_max: 4.0
+  wool:
+    lbp_std_min: 6.0
+    glcm_contrast_max: 50.0
+  cotton:
+    glcm_energy_min: 0.30
+  blend:
+    default: true    # catch-all
