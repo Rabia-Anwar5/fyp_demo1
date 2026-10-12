@@ -11,6 +11,27 @@ dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017/catch_db";
 
+const ProductSchema = new mongoose.Schema(
+  {
+    sku: { type: String, required: true },
+    source: { type: String, default: "scraper" },
+    store_id: { type: String, required: true },
+    store_name: { type: String },
+    mall_id: { type: String },
+    name: { type: String, required: true },
+    category: { type: String },
+    subcategory: { type: String },
+    fabric_type: { type: String },
+    original_price: { type: Number },
+    sale_price: { type: Number },
+    stock_qty: { type: Number, default: 0 },
+    stock_status: { type: String, default: "in_stock" },
+    image_url: { type: String },
+    last_updated: { type: Date, default: Date.now },
+  },
+  { timestamps: true }
+);
+
 export async function runScraperJob(): Promise<{ success: boolean; itemsUpdated: number }> {
   console.log(`[${new Date().toISOString()}] [CATCH Scraper] Starting scheduled scrape cycle...`);
   const connector = new MockConnector();
@@ -20,12 +41,12 @@ export async function runScraperJob(): Promise<{ success: boolean; itemsUpdated:
 
   // If MongoDB connected, sync to collection
   if (mongoose.connection.readyState === 1) {
-    const Product = mongoose.model("Product");
+    const Product = mongoose.models.Product || mongoose.model("Product", ProductSchema);
     for (const p of products) {
       await Product.updateOne(
-        { product_id: p.product_id },
+        { sku: p.sku, store_id: (p as any).store_id ?? connector.store_id },
         { $set: { ...p, last_updated: new Date() } },
-        { upsur: true }
+        { upsert: true }
       );
     }
   }

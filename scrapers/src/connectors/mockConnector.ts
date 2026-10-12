@@ -5,7 +5,7 @@
  */
 import * as fs from "fs";
 import * as path from "path";
-import { StoreConnector, ScrapeResult } from "./storeConnector";
+import { StoreConnector, ScrapeResult, RawProduct } from "./storeConnector";
 
 export class MockConnector implements StoreConnector {
   store_id: string;
@@ -13,7 +13,12 @@ export class MockConnector implements StoreConnector {
   mall_id: string;
   private seedFile: string;
 
-  constructor(store_id: string, store_name: string, mall_id: string, seedFile: string) {
+  constructor(
+    store_id: string = "all",
+    store_name: string = "All Mall Stores",
+    mall_id: string = "mall_001",
+    seedFile: string = path.resolve(__dirname, "../../mock-data/seed_products.json")
+  ) {
     this.store_id = store_id;
     this.store_name = store_name;
     this.mall_id = mall_id;
@@ -25,7 +30,7 @@ export class MockConnector implements StoreConnector {
     await new Promise((r) => setTimeout(r, 50 + Math.random() * 100));
 
     const raw = JSON.parse(fs.readFileSync(this.seedFile, "utf-8"));
-    const products = raw.filter((p: any) => p.store_id === this.store_id);
+    const products = this.store_id === "all" ? raw : raw.filter((p: any) => p.store_id === this.store_id);
     return {
       store_id: this.store_id,
       store_name: this.store_name,
@@ -34,5 +39,10 @@ export class MockConnector implements StoreConnector {
       products,
       promotions: [],  // promotions come via seed_coupons.json separately
     };
+  }
+
+  async fetchProducts(): Promise<RawProduct[]> {
+    const result = await this.fetch();
+    return result.products;
   }
 }
