@@ -43,13 +43,9 @@ const IMAGE_SELECTORS = [
   "img.main-image",
 ];
 
-interface DetectedProduct {
-  title: string | null;
-  price: number | null;
-  priceString: string | null;
-  imageUrl: string | null;
-  url: string;
-}
+/**
+ * @typedef {{ title: string|null, price: number|null, priceString: string|null, imageUrl: string|null, url: string }} DetectedProduct
+ */
 
 let scanTimer = null;
 let currentProduct = null;
@@ -300,12 +296,12 @@ function renderOverlay(product, deals) {
 
   container.querySelectorAll(".catch-copy-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
-      const code = (e.target as HTMLElement).getAttribute("data-code");
+      const code = e.target.getAttribute("data-code");
       if (code) {
         navigator.clipboard.writeText(code);
-        (e.target as HTMLElement).textContent = "Copied!";
+        e.target.textContent = "Copied!";
         setTimeout(() => {
-          (e.target as HTMLElement).textContent = "Copy";
+          e.target.textContent = "Copy";
         }, 1500);
       }
     });

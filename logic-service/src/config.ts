@@ -23,5 +23,5 @@ export const config = {
   MERCHANT_API_KEY_HASH: process.env.MERCHANT_API_KEY_HASH ?? "dev-hash",
 
   // Scraper schedule
-  SCRAPER_CRON: process.env.SCRAPER_CRON ?? "0 */30 * * * *",   // every 30 min
+  SCRAPER_CRON: process.env.SCRAPER_CRON ?? "*/30 * * * *",   // every 30 min
 };

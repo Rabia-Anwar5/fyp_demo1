@@ -1,7 +1,8 @@
 /**
  * Hook for registering Expo Push Notifications and handling incoming deal pushes.
+ * Returns expoPushToken (string|null) and the latest notification object.
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
@@ -14,11 +15,14 @@ Notifications.setNotificationHandler({
 });
 
 export function usePushNotifications(onDealReceived?: (dealId: string) => void) {
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+  const [notification, setNotification] = useState<Notifications.Notification | null>(null);
   const notifListener = useRef<any>();
   const responseListener = useRef<any>();
 
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
+      setExpoPushToken(token);
       if (token) {
         // In production: send token to logic-service to update UserProfile.fcm_tokens
         console.log("[CATCH] Push token:", token);
@@ -26,11 +30,13 @@ export function usePushNotifications(onDealReceived?: (dealId: string) => void) 
     });
 
     notifListener.current = Notifications.addNotificationReceivedListener((notif) => {
+      setNotification(notif);
       const dealId = notif.request.content.data?.deal_id as string;
       if (dealId && onDealReceived) onDealReceived(dealId);
     });
 
     responseListener.current = Notifications.addNotificationResponseReceivedListener((resp) => {
+      setNotification(resp.notification);
       const dealId = resp.notification.request.content.data?.deal_id as string;
       if (dealId && onDealReceived) onDealReceived(dealId);
     });
@@ -40,6 +46,8 @@ export function usePushNotifications(onDealReceived?: (dealId: string) => void) 
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
+
+  return { expoPushToken, notification };
 }
 
 async function registerForPushNotificationsAsync(): Promise<string | null> {

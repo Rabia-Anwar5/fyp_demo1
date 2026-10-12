@@ -1,0 +1,15 @@
+{
+  "name": "catch-project",
+  "version": "1.0.0",
+  "description": "CATCH - Retail Assistant Capstone Project",
+  "scripts": {
+    "dev": "powershell -ExecutionPolicy Bypass -File ./run.ps1",
+    "start": "powershell -ExecutionPolicy Bypass -File ./run.ps1",
+    "stop": "powershell -ExecutionPolicy Bypass -File ./stop.ps1",
+    "mobile": "npm --prefix mobile start",
+    "mobile:android": "npm --prefix mobile run android",
+    "mobile:ios": "npm --prefix mobile run ios",
+    "mobile:web": "npm --prefix mobile run web",
+    "build:logic": "npm --prefix logic-service run build"
+  }
+}

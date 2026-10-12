@@ -4,7 +4,8 @@
  */
 import React, { useState } from "react";
 import { StyleSheet, View, SafeAreaView, StatusBar, Text, TouchableOpacity } from "react-native";
-import { CameraScreen } from "./src/screens/CameraScreen";
+import CameraScreen from "./src/screens/CameraScreen";
+import DealsHaulScreen from "./src/screens/DealsHaulScreen";
 import { usePushNotifications } from "./src/hooks/usePushNotifications";
 
 export default function App() {
@@ -29,12 +30,7 @@ export default function App() {
       {/* Screen Body */}
       <View style={styles.body}>
         {activeTab === "camera" && <CameraScreen />}
-        {activeTab === "history" && (
-          <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderTitle}>Recent Deals & History</Text>
-            <Text style={styles.placeholderSubtitle}>Scanned mall items and saved coupons will appear here.</Text>
-          </View>
-        )}
+        {activeTab === "history" && <DealsHaulScreen />}
         {activeTab === "settings" && (
           <View style={styles.placeholderContainer}>
             <Text style={styles.placeholderTitle}>Preferences & Push Settings</Text>

@@ -2,7 +2,8 @@
  * DealCard component - displays a single ranked deal.
  */
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Clipboard } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { Deal } from "../services/apiService";
 
 interface Props { deal: Deal; }
@@ -10,8 +11,8 @@ interface Props { deal: Deal; }
 export default function DealCard({ deal }: Props) {
   const expiryDate = new Date(deal.expiry).toLocaleDateString("en-MY", { day: "numeric", month: "short", year: "numeric" });
 
-  const copyCode = () => {
-    if (deal.coupon_code) Clipboard.setString(deal.coupon_code);
+  const copyCode = async () => {
+    if (deal.coupon_code) await Clipboard.setStringAsync(deal.coupon_code);
   };
 
   return (

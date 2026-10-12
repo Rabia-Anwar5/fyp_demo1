@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CATCH – Contextual Retail Shopping Assistant & Deal Hub</title>
+  <meta name="description" content="Physical mall retail shopping assistant using computer vision, fabric texture analysis, and agentic proactive coupon comparison.">
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="app-background">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-wrapper">
+        <span class="logo-radar"></span>
+        <span class="logo-title">CATCH</span>
+      </div>
+      <span class="badge-capstone">Capstone MVP</span>
+    </div>
+
+    <!-- Live Status Indicators -->
+    <div class="header-center">
+      <div class="status-chip" id="chip-ai">
+        <span class="status-dot"></span>
+        <span>AI Vision (8000)</span>
+      </div>
+      <div class="status-chip" id="chip-logic">
+        <span class="status-dot"></span>
+        <span>Deal Engine (3001)</span>
+      </div>
+      <div class="status-chip" id="chip-mode">
+        <span class="status-dot active"></span>
+        <span>Hyper-Local Mall Mode</span>
+      </div>
+    </div>
+
+    <!-- Mode Switcher -->
+    <div class="header-right">
+      <button class="nav-tab active" id="tab-shopper" onclick="switchTab('shopper')">
+        🛍️ Shopper Assistant
+      </button>
+      <button class="nav-tab" id="tab-map" onclick="switchTab('map')">
+        🗺️ Mall Wayfinder
+      </button>
+      <button class="nav-tab" id="tab-merchant" onclick="switchTab('merchant')">
+        🏪 Merchant Portal
+      </button>
+      <button class="btn-haul-pill" id="btn-haul-toggle" onclick="toggleHaulDrawer()" title="View your Mall Haul and Cashier Barcodes">
+        <span class="haul-icon">🛒</span>
+        <span id="haul-pill-label">Mall Haul (0)</span>
+        <span class="haul-pill-badge" id="haul-pill-savings">Save $0.00</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Application Body -->
+  <main class="app-main">
+    
+    <!-- Tab 1: Shopper View -->
+    <div class="tab-content active" id="view-shopper">
+      <!-- Omnichannel Live Store Scraper & Search Header -->
+      <div class="omnichannel-search-card">
+        <div class="search-title-row">
+          <div>
+            <h3>🌐 Multi-Store Scraper & Price Comparison Hub</h3>
+            <p>Aggregating real-time scraped markdowns across <strong>Daraz, Amazon, Zara, Nike, and In-Mall Stores</strong>. Click any store to redirect and buy directly.</p>
+          </div>
+          <div class="scraper-status-tag">
+            <span class="live-pulse"></span>
+            <span>Live Scraping Active (Daraz • Amazon • Mall POS)</span>
+          </div>
+        </div>
+
+        <div class="search-input-group">
+          <div class="search-field">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="omni-search-input" placeholder="Search any item across all stores (e.g. jacket, blazer, sneaker, watch)..." onkeydown="handleSearchKey(event)">
+            <button class="btn-clear-search" onclick="clearOmniSearch()" id="btn-clear-search" style="display: none;">✕</button>
+          </div>
+          <button class="btn-primary btn-scrape-search" onclick="executeOmniSearch()">⚡ Scrape & Compare</button>
+        </div>
+
+        <div class="quick-category-pills">
+          <span class="pill-label">Popular Searches:</span>
+          <button class="cat-pill active" onclick="searchByKeyword('denim jacket')">🧥 Denim Jacket</button>
+          <button class="cat-pill" onclick="searchByKeyword('wool blazer')">👔 Tailored Wool Blazer</button>
+          <button class="cat-pill" onclick="searchByKeyword('sneakers')">👟 Athletic Sneakers</button>
+          <button class="cat-pill" onclick="searchByKeyword('cotton shirt')">👕 Cotton Shirt</button>
+          <button class="cat-pill" onclick="searchByKeyword('luxury watch')">⌚ Chronograph Watch</button>
+          <button class="cat-pill" onclick="searchByKeyword('sunglasses')">🕶️ UV Sunglasses</button>
+        </div>
+      </div>
+
+      <div class="grid-container">
+        
+        <!-- Left Column: Camera Viewport & Presets -->
+        <section class="panel camera-panel">
+          <div class="panel-header">
+            <h2>📷 Point & Scan Mall Item</h2>
+            <div class="viewport-controls">
+              <button class="btn-subtle" id="btn-toggle-camera" onclick="toggleCamera()">
+                <span id="cam-icon">📹</span> <span id="cam-text">Start Webcam</span>
+              </button>
+              <label class="btn-subtle file-upload-label">
+                📁 Upload Photo
+                <input type="file" id="file-input" accept="image/*" onchange="handleFileUpload(event)">
+              </label>
+            </div>
+          </div>
+
+          <!-- Live Scanner Viewport -->
+          <div class="scanner-viewport" id="drop-zone">
+            <!-- Video feed for webcam -->
+            <video id="webcam-video" autoplay playsinline muted style="display: none;"></video>
+            
+            <!-- Static image preview -->
+            <img id="image-preview" src="assets/denim_jacket.jpg" alt="Active Scan Item" class="preview-img">
+            
+            <!-- Bounding Box Canvas Overlay -->
+            <canvas id="overlay-canvas"></canvas>
+
+            <!-- Scanning Reticle & Laser Animation -->
+            <div class="scan-reticle" id="reticle">
+              <div class="scan-corner tl"></div>
+              <div class="scan-corner tr"></div>
+              <div class="scan-corner bl"></div>
+              <div class="scan-corner br"></div>
+              <div class="scan-laser"></div>
+              <div class="scan-text" id="scan-hint">AI Targeting Active</div>
+            </div>
+
+            <!-- Shutter Action Button -->
+            <button class="btn-shutter" id="btn-scan" onclick="triggerInference()">
+              <span class="shutter-ring"></span>
+              <span class="shutter-core">⚡ Scan & Match Deals</span>
+            </button>
+          </div>
+
+          <!-- Quick Test Presets Carousel -->
+          <div class="presets-section">
+            <span class="presets-label">Instant Mall Presets (1-Click Test):</span>
+            <div class="presets-row">
+              <button class="preset-card active" onclick="loadPreset(event, 'denim_jacket.jpg', 'Denim Jacket', 'apparel', 'jacket', 'denim', 199.0)">
+                <img src="assets/denim_jacket.jpg" alt="Denim Jacket">
+                <div class="preset-info">
+                  <span class="preset-name">Denim Jacket</span>
+                  <span class="preset-price">$199.00</span>
+                </div>
+              </button>
+              <button class="preset-card" onclick="loadPreset(event, 'wool_blazer.jpg', 'Tailored Wool Blazer', 'apparel', 'jacket', 'wool', 249.0)">
+                <img src="assets/wool_blazer.jpg" alt="Wool Blazer">
+                <div class="preset-info">
+                  <span class="preset-name">Wool Blazer</span>
+                  <span class="preset-price">$249.00</span>
+                </div>
+              </button>
+              <button class="preset-card" onclick="loadPreset(event, 'sneakers.jpg', 'Performance Sneakers', 'footwear', 'sneaker', null, 130.0)">
+                <img src="assets/sneakers.jpg" alt="Athletic Sneakers">
+                <div class="preset-info">
+                  <span class="preset-name">Athletic Sneakers</span>
+                  <span class="preset-price">$130.00</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right Column: Recognition & Proactive Deals -->
+        <section class="panel deals-panel">
+          
+          <!-- Vision & Fabric Intelligence -->
+          <div class="intelligence-card">
+            <div class="card-title-row">
+              <h3>🧠 Vision & Texture Intelligence</h3>
+              <span class="badge-confidence" id="confidence-badge">Confidence: 85%</span>
+            </div>
+
+            <div class="intel-grid">
+              <div class="intel-box">
+                <span class="intel-label">Category / Sub</span>
+                <span class="intel-val" id="intel-category">Apparel / Jacket</span>
+              </div>
+              <div class="intel-box">
+                <span class="intel-label">Fabric / Weave</span>
+                <span class="intel-val" id="intel-fabric">Denim (100% Cotton)</span>
+              </div>
+              <div class="intel-box">
+                <span class="intel-label">Quality Tier</span>
+                <span class="intel-val premium" id="intel-quality">⭐ Premium Weave</span>
+              </div>
+              <div class="intel-box">
+                <span class="intel-label">End-to-End Latency</span>
+                <span class="intel-val latency" id="intel-latency">⚡ 18.2 ms</span>
+              </div>
+            </div>
+
+            <!-- Fabric Texture Metrics Breakdown -->
+            <div class="texture-bars">
+              <div class="texture-bar-item">
+                <div class="bar-label"><span>GLCM Smoothness / Energy</span><span id="txt-energy">0.52</span></div>
+                <div class="bar-track"><div class="bar-fill" id="bar-energy" style="width: 52%;"></div></div>
+              </div>
+              <div class="texture-bar-item">
+                <div class="bar-label"><span>LBP Thread Microstructure</span><span id="txt-lbp">4.80</span></div>
+                <div class="bar-track"><div class="bar-fill" id="bar-lbp" style="width: 68%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Proactive Deal Matcher -->
+          <div class="deals-container">
+            <div class="deals-header">
+              <h3>🎯 Proactive Mall Deals</h3>
+              <span class="deal-counter" id="deal-count-badge">2 Available</span>
+            </div>
+
+            <!-- Best Ranked Deal (Spotlight Card) -->
+            <div class="spotlight-deal" id="spotlight-card">
+              <div class="spotlight-badge">🏆 TOP VALUE DEAL</div>
+              <div class="spotlight-header">
+                <div>
+                  <h4 class="store-name" id="best-store">Denim Republic</h4>
+                  <span class="store-location">📍 Level 2, Central Galleria</span>
+                </div>
+                <div class="saving-tag" id="best-saving-tag">SAVE $59.70 (30%)</div>
+              </div>
+
+              <div class="price-comparison">
+                <div class="price-item">
+                  <span class="p-label">Tag Price:</span>
+                  <span class="p-val original" id="best-orig-price">$199.00</span>
+                </div>
+                <div class="price-arrow">→</div>
+                <div class="price-item">
+                  <span class="p-label">Net You Pay:</span>
+                  <span class="p-val discounted" id="best-disc-price">$139.30</span>
+                </div>
+              </div>
+
+              <div class="coupon-action-row">
+                <div class="coupon-code-box">
+                  <span class="code-label">PROMO CODE:</span>
+                  <code id="best-coupon-code">DENIM30</code>
+                </div>
+                <button class="btn-copy" id="btn-copy" onclick="copyCouponCode()">
+                  📋 Copy Code
+                </button>
+                <a class="btn-store-redirect" id="best-store-redirect" href="https://www.daraz.pk" target="_blank" rel="noopener noreferrer">
+                  🔗 Buy on Store ↗
+                </a>
+                <button class="btn-tryon-launch" onclick="openTryOnModal()">
+                  👗 AR Try-On
+                </button>
+              </div>
+
+              <!-- Intelligent Deal Enhancements -->
+              <div class="deal-action-grid">
+                <button class="btn-deal-action btn-haul-action" onclick="addCurrentDealToHaul()">
+                  <span>🛒</span>
+                  <span>Add to Mall Haul</span>
+                </button>
+                <button class="btn-deal-action btn-nav-action" onclick="navigateToBestDealStore()">
+                  <span>🗺️</span>
+                  <span>Guide Me (Walk)</span>
+                </button>
+                <button class="btn-deal-action btn-history-action" onclick="openPriceHistoryModal()">
+                  <span>📈</span>
+                  <span>Price History & Match</span>
+                </button>
+              </div>
+
+              <!-- Explainability -->
+              <div class="why-top-box" id="best-why-box">
+                <span class="why-icon">💡</span>
+                <span class="why-text" id="best-why-text">
+                  Highest net saving (30%); verified store promotion active today.
+                </span>
+              </div>
+            </div>
+
+            <!-- Other Stores Comparison List -->
+            <div class="other-deals-list" id="secondary-deals">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- Tab 2: Merchant Portal View -->
+    <div class="tab-content" id="view-merchant">
+      <div class="merchant-container">
+        <div class="merchant-header-card">
+          <h2>🏪 Mall Merchant Ingestion Portal</h2>
+          <p>Local mall stores can directly publish inventory deltas, flash markdown promos, and coupon terms into CATCH's catalog.</p>
+        </div>
+
+        <div class="merchant-form-grid">
+          <!-- Form -->
+          <div class="panel merchant-form-panel">
+            <h3>Publish New In-Store Markdown</h3>
+            <form id="merchant-form" onsubmit="handleMerchantSubmit(event)">
+              <div class="form-group">
+                <label>Store ID & Name</label>
+                <div class="form-row">
+                  <input type="text" id="m-store-id" value="store_zara_01" required placeholder="store_01">
+                  <input type="text" id="m-store-name" value="Zara Central Mall" required placeholder="Store Name">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Product Title & Category</label>
+                <input type="text" id="m-title" value="Tailored Slim Wool Trench Coat" required>
+                <div class="form-row" style="margin-top: 8px;">
+                  <select id="m-category">
+                    <option value="apparel">Apparel</option>
+                    <option value="footwear">Footwear</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="electronics">Electronics</option>
+                  </select>
+                  <input type="text" id="m-subcategory" value="jacket" placeholder="Subcategory (e.g. jacket)">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Pricing & Stock Quantity</label>
+                <div class="form-row">
+                  <input type="number" id="m-price" value="180.00" step="0.01" required placeholder="Retail Price ($)">
+                  <input type="number" id="m-stock" value="12" min="1" required placeholder="Stock Qty">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Discount Code & Percentage</label>
+                <div class="form-row">
+                  <input type="text" id="m-coupon" value="ZARA25" placeholder="Promo Code">
+                  <input type="number" id="m-discount" value="25" min="1" max="90" placeholder="Discount %">
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" id="btn-submit-merchant">
+                🚀 Publish Markdown to Live Shoppers
+              </button>
+            </form>
+          </div>
+
+          <!-- Live Merchant Catalog Feed -->
+          <div class="panel merchant-feed-panel">
+            <h3>📦 Registered Live Mall Catalog</h3>
+            <div class="catalog-list" id="catalog-feed">
+              <!-- Dynamically populated items -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Indoor Mall Wayfinder View (Feature 1) -->
+    <div class="tab-content" id="view-map">
+      <div class="wayfinder-container">
+        <!-- Wayfinder Header Card -->
+        <div class="wayfinder-header-card">
+          <div class="wayfinder-title-row">
+            <div>
+              <h2>🗺️ Hyper-Local Mall Indoor Wayfinder</h2>
+              <p>Turn-by-turn physical mall navigation, beacon-assisted store radar, and floor-level deal tracking.</p>
+            </div>
+            <!-- Floor Selector -->
+            <div class="floor-selector">
+              <span class="floor-label">Floor Level:</span>
+              <button class="floor-btn" id="floor-l1" onclick="switchFloor('L1')">Level 1 (Atrium)</button>
+              <button class="floor-btn active" id="floor-l2" onclick="switchFloor('L2')">Level 2 (Fashion)</button>
+              <button class="floor-btn" id="floor-l3" onclick="switchFloor('L3')">Level 3 (Lifestyle)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="wayfinder-grid">
+          <!-- Left: Interactive SVG Mall Floor Map -->
+          <div class="panel map-panel">
+            <div class="map-toolbar">
+              <div class="map-legend">
+                <span class="legend-item"><span class="legend-dot user-pos"></span> Shopper (You)</span>
+                <span class="legend-item"><span class="legend-dot active-deal"></span> Store with Active Deal</span>
+                <span class="legend-item"><span class="legend-dot escalator"></span> Escalator / Lift</span>
+              </div>
+              <div class="map-zoom-controls">
+                <button class="btn-map-tool" onclick="recenterMap()">🎯 Recenter</button>
+                <button class="btn-map-tool" id="btn-toggle-beacon" onclick="toggleRadarPulse()">📡 Beacon Radar</button>
+              </div>
+            </div>
+
+            <!-- Interactive SVG Mall Map Viewport -->
+            <div class="map-viewport" id="map-viewport">
+              <svg id="mall-svg-map" viewBox="0 0 900 550" class="mall-svg">
+                <!-- Mall Building Shell -->
+                <defs>
+                  <linearGradient id="corridorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#141628" />
+                    <stop offset="100%" stop-color="#0e101f" />
+                  </linearGradient>
+                  <filter id="glowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="8" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+
+                <!-- Floor Background -->
+                <rect x="20" y="20" width="860" height="510" rx="28" fill="url(#corridorGrad)" stroke="rgba(139, 92, 246, 0.25)" stroke-width="2"/>
+                <!-- Central Galleria Open Atrium -->
+                <ellipse cx="450" cy="275" rx="140" ry="80" fill="rgba(99, 102, 241, 0.04)" stroke="rgba(139, 92, 246, 0.3)" stroke-width="2" stroke-dasharray="6,6"/>
+                <text x="450" y="275" text-anchor="middle" fill="#64748b" font-size="12" font-family="Outfit" letter-spacing="3">CENTRAL GALLERIA ATRIUM</text>
+
+                <!-- Store Units & Amenities (Dynamically rendered by app.js) -->
+                <g id="svg-stores-group"></g>
+                <g id="svg-amenities-group"></g>
+                <g id="svg-path-group"></g>
+                <g id="svg-beacons-group"></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Right: Guidance & Directions Sidebar -->
+          <div class="panel navigation-sidebar">
+            <div class="active-route-card" id="route-card">
+              <div class="route-badge">🎯 ACTIVE ROUTE</div>
+              <h3 id="route-store-title">Denim Republic (Unit 204)</h3>
+              <p class="route-meta" id="route-store-meta">📍 Level 2 • Central Galleria North</p>
+
+              <div class="route-stats">
+                <div class="r-stat">
+                  <span class="r-label">Walking Time</span>
+                  <span class="r-val" id="route-time">⚡ 2 mins</span>
+                </div>
+                <div class="r-stat">
+                  <span class="r-label">Distance</span>
+                  <span class="r-val" id="route-dist">120 meters</span>
+                </div>
+                <div class="r-stat">
+                  <span class="r-label">Active Savings</span>
+                  <span class="r-val highlight" id="route-save">30% OFF</span>
+                </div>
+              </div>
+
+              <!-- Step-by-Step Directions List -->
+              <div class="directions-list" id="directions-list">
+                <div class="direction-step active">
+                  <span class="step-num">1</span>
+                  <span class="step-text">From Central Fountain, head north towards Escalator E1.</span>
+                </div>
+                <div class="direction-step">
+                  <span class="step-num">2</span>
+                  <span class="step-text">Take Escalator E1 up to Level 2 Fashion Galleria.</span>
+                </div>
+                <div class="direction-step">
+                  <span class="step-num">3</span>
+                  <span class="step-text">Turn left past Zara. Denim Republic is directly on your right.</span>
+                </div>
+              </div>
+
+              <!-- Action button -->
+              <button class="btn-primary" onclick="simulateWalk()" id="btn-simulate-walk">
+                🚶‍♂️ Simulate Walking Route
+              </button>
+            </div>
+
+            <!-- Nearby Stores with Deals on this Floor -->
+            <div class="nearby-deals-card">
+              <h4>🏷️ Live Deal Radar on This Floor</h4>
+              <div class="nearby-stores-list" id="nearby-stores-list">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: AI Price History & Verified Price Match Generator (Feature 3) -->
+  <div class="modal-backdrop" id="price-history-modal" style="display: none;" onclick="closePriceHistoryModal(event)">
+    <div class="modal-card wide-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3>📈 AI Price History & Price Match Negotiator</h3>
+          <p class="modal-subtitle">Real-time markdown integrity audit, 30-day volatility curve, and certified cashier match pass</p>
+        </div>
+        <button class="btn-close" onclick="closePriceHistoryModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="history-grid">
+          <!-- Left: 30-Day Interactive SVG Price Chart -->
+          <div class="chart-container">
+            <div class="chart-header">
+              <span class="chart-title">30-Day In-Mall Price History (<span id="ph-item-name">Denim Jacket</span>)</span>
+              <span class="badge-lowest" id="ph-badge-lowest">🔥 ALL-TIME LOW RECORDED</span>
+            </div>
+            
+            <div class="svg-chart-wrapper" id="price-chart-wrapper">
+              <!-- Dynamically populated SVG Chart -->
+            </div>
+
+            <div class="chart-stats-row">
+              <div class="c-stat">
+                <span class="c-label">30-Day High</span>
+                <span class="c-val" id="ph-high">$219.00</span>
+              </div>
+              <div class="c-stat">
+                <span class="c-label">Mall Average</span>
+                <span class="c-val" id="ph-avg">$195.40</span>
+              </div>
+              <div class="c-stat">
+                <span class="c-label">Today's Deal</span>
+                <span class="c-val green" id="ph-current">$139.30</span>
+              </div>
+              <div class="c-stat">
+                <span class="c-label">Authenticity</span>
+                <span class="c-val purple" id="ph-score">98.4% (Genuine)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Price Match Certificate Card -->
+          <div class="price-match-box">
+            <div class="pm-badge">🛡️ VERIFIED PRICE GUARANTEE</div>
+            <h4>Store Cashier Price Match Pass</h4>
+            <p class="pm-desc">Use this certified certificate at the register if the store does not automatically apply promotional markdowns.</p>
+
+            <div class="pm-certificate" id="pm-certificate">
+              <div class="cert-header">
+                <span class="cert-logo">CATCH VERIFIED</span>
+                <span class="cert-id" id="cert-timestamp">REF: #CT-889421</span>
+              </div>
+              <div class="cert-body">
+                <div class="cert-row">
+                  <span>Target Item:</span>
+                  <strong id="cert-item-title">Denim Jacket (Premium Weave)</strong>
+                </div>
+                <div class="cert-row">
+                  <span>Store:</span>
+                  <strong id="cert-store-name">Denim Republic (L2-204)</strong>
+                </div>
+                <div class="cert-row">
+                  <span>Target Price:</span>
+                  <strong class="cert-price" id="cert-deal-price">$139.30</strong>
+                </div>
+                <div class="cert-row">
+                  <span>Savings Verified:</span>
+                  <strong class="cert-save" id="cert-saving">$59.70 (30% OFF)</strong>
+                </div>
+              </div>
+              <!-- Barcode / QR for cashier scanner -->
+              <div class="cert-barcode-wrapper">
+                <div class="barcode-lines" id="cert-barcode-lines"></div>
+                <span class="barcode-number" id="cert-barcode-code">*MATCH-DENIM30-CATCH*</span>
+              </div>
+            </div>
+
+            <button class="btn-copy" onclick="printOrCopyCertificate()">
+              📋 Copy Match Pass / Show Cashier
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span class="tryon-note">💡 Audited against scrapers, POS feed, and registered merchant catalogue.</span>
+        <button class="btn-primary" onclick="closePriceHistoryModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide-out Drawer: "Mall Haul" Multi-Item Savings Pass (Feature 2) -->
+  <div class="haul-drawer-backdrop" id="haul-drawer-backdrop" style="display: none;" onclick="toggleHaulDrawer(event)">
+    <div class="haul-drawer" onclick="event.stopPropagation()">
+      <div class="haul-header">
+        <div class="haul-header-left">
+          <h3>🛍️ My Mall Haul Pass</h3>
+          <p class="haul-sub">Live basket savings & cashier register barcode pass</p>
+        </div>
+        <button class="btn-close" onclick="toggleHaulDrawer()">✕</button>
+      </div>
+
+      <div class="haul-body">
+        <!-- Mall Threshold Bonus Reward Meter -->
+        <div class="mall-rewards-card">
+          <div class="rewards-header">
+            <span class="rewards-title">🏆 Mall Spend Milestone</span>
+            <span class="rewards-target" id="haul-perk-target">$139.30 / $200.00</span>
+          </div>
+          <div class="perks-progress-track">
+            <div class="perks-progress-fill" id="haul-perks-fill" style="width: 69%;"></div>
+          </div>
+          <div class="perk-callout" id="haul-perk-callout">
+            🎁 Spend $60.70 more in mall to unlock <strong>Free Valet / Parking + $20 Mall Voucher!</strong>
+          </div>
+        </div>
+
+        <!-- Basket Items List -->
+        <div class="haul-items-section">
+          <div class="haul-section-title">
+            <span>Scanned Basket Items</span>
+            <span class="haul-items-count" id="haul-count">1 Item</span>
+          </div>
+          <div class="haul-items-list" id="haul-items-list">
+            <!-- Dynamically populated items -->
+          </div>
+        </div>
+
+        <!-- Summary & Savings Breakdown -->
+        <div class="haul-summary-box">
+          <div class="sum-row">
+            <span>Total Tag Price:</span>
+            <span id="haul-total-orig">$199.00</span>
+          </div>
+          <div class="sum-row">
+            <span>Total Mall Savings:</span>
+            <span class="green-text" id="haul-total-save">-$59.70 (30%)</span>
+          </div>
+          <div class="sum-row total-row">
+            <span>Net You Pay Today:</span>
+            <span class="highlight-total" id="haul-total-net">$139.30</span>
+          </div>
+        </div>
+
+        <!-- Cashier Register Digital Pass Barcodes -->
+        <div class="cashier-pass-section">
+          <h4>📱 Register Quick-Scan Barcodes</h4>
+          <p class="pass-hint">Present these scannable promo codes to each store cashier at checkout:</p>
+          <div class="cashier-barcodes-container" id="cashier-barcodes">
+            <!-- Dynamically generated barcode passes -->
+          </div>
+        </div>
+      </div>
+
+      <div class="haul-footer">
+        <button class="btn-subtle" onclick="clearMallHaul()">🗑️ Clear Haul</button>
+        <button class="btn-primary" onclick="exportMallHaulSummary()">📋 Save Shopping Pass</button>
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+  <!-- Virtual Try-On AR Modal -->
+  <div class="modal-backdrop" id="tryon-modal" style="display: none;" onclick="closeTryOnModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3>✨ Virtual Try-On Everywhere (AR-Ready)</h3>
+          <p class="modal-subtitle">Calibrated 2D garment silhouette projection & landmark tracking</p>
+        </div>
+        <button class="btn-close" onclick="closeTryOnModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="tryon-stage">
+          <!-- User Silhouette / Mannequin -->
+          <div class="silhouette-bg">
+            <div class="mannequin-frame"></div>
+          </div>
+
+          <!-- Projected Garment Overlay -->
+          <img id="tryon-garment-img" src="assets/denim_jacket.jpg" alt="Garment" class="projected-garment">
+
+          <!-- AR Landmark Markers -->
+          <div class="ar-anchor-mesh">
+            <span class="ar-point shoulder-l"></span>
+            <span class="ar-point shoulder-r"></span>
+            <span class="ar-point chest-c"></span>
+            <span class="ar-point waist-l"></span>
+            <span class="ar-point waist-r"></span>
+            <div class="ar-bounding-tag">Pose Calibrated: 98.2% Fit</div>
+          </div>
+        </div>
+
+        <div class="tryon-controls">
+          <div class="slider-group">
+            <label>Garment Scale: <span id="scale-val">100%</span></label>
+            <input type="range" min="70" max="130" value="100" id="scale-slider" oninput="updateTryOnScale(this.value)">
+          </div>
+          <div class="slider-group">
+            <label>Vertical Offset: <span id="y-val">0px</span></label>
+            <input type="range" min="-50" max="50" value="0" id="y-slider" oninput="updateTryOnY(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span class="tryon-note">💡 Real-time projection calibrated to casual smartphone camera feeds.</span>
+        <button class="btn-primary" onclick="closeTryOnModal()">Return to Deals</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="toast" id="app-toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
